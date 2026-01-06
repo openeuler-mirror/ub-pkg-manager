@@ -1,0 +1,14 @@
+[Unit]
+Description=The full function of UB OS Component
+After=ub-pkg-urma.service ub-pkg-mem.service ub-pkg-virt.service
+Requires=ub-pkg-urma.service ub-pkg-mem.service ub-pkg-virt.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/ub-pkg-manager/bin/00-ub-pkg-manager.sh
+StandardOutput=append:/var/log/ub-pkg-manager.log
+StandardError=append:/var/log/ub-pkg-manager.log
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
