@@ -14,12 +14,12 @@ function ub_pkg_mem_main(){
         exit 1
     fi
 
-    if [ -f "/lib/modules/$(uname -r)/kernel/drivers/sentry_reporter.ko" ] ; then
+    if [ -f "/lib/modules/$(uname -r)/kernel/drivers/ub/sentry/sentry_reporter.ko" ] ; then
         modprobe sentry_reporter
         modprobe sentry_remote_reporter
     else
         log WARN "Not found sentry_reporter module file, skipping"
-        exit 1
+        exit 0
 fi
 }
 
