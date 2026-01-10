@@ -59,22 +59,20 @@ module_is_loaded() {
     lsmod | grep -q "^$1\b " >/dev/null 2>&1
 }
 
-run_step() {
-    local desc="$1"
-    shift
-    local cmd="$@"
-    local script_name="$(basename "$0")"
+run_modprobe() {
+    local mod="$1"
+    local cmd="modprobe $mod"
     
-    log INFO "Starting: $desc"
-    log DEBUG "Command: $cmd"
-    
-    if out=$($cmd 2>&1); then
-        log INFO "Success: $desc"
+    log INFO "Starting: $cmd"
+    local out=$($cmd 2>&1)
+    local exit_code=$?
+
+    if [ "$exit_code" -eq 0 ]; then
+        log INFO "Success: $cmd"
         log DEBUG "Output: $out"
         return 0
     else
-        local exit_code=$?
-        log ERROR "Failed: $desc (exit code: $exit_code)"
+        log ERROR "Failed: $cmd (exit code: $exit_code)"
         log ERROR "Command output: $out"
         return $exit_code
     fi
@@ -85,7 +83,7 @@ modprobe_sys_ko() {
     
     for mod in "${ko[@]}"; do
         if ! module_is_loaded "$mod"; then
-            if ! run_step "modprobe $mod" modprobe "$mod"; then
+            if ! run_modprobe "$mod"; then
                 log ERROR "Failed to load module $mod, aborting"
                 return 1
             fi
