@@ -98,5 +98,13 @@ modprobe_sys_ko() {
     return 0
 }
 
+check_ubrt_support() {
+    if [ ! -f "/sys/firmware/acpi/tables/UBRT" ]; then
+        log ERROR "The ACPI table UBRT is not found, current system does not support UB."
+        exit 1
+    fi
+}
+
 ensure_log_dir
+check_ubrt_support
 
