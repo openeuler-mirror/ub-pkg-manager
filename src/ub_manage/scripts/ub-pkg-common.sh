@@ -49,9 +49,7 @@ log() {
     
     if [ $message_level_index -ge $current_level_index ] || [ $current_level_index -eq -1 ]; then
         echo "$timestamp [$level] $script_name: $message" >> "$LOG_FILE"
-        if [ "$level" == "ERROR" ] || [ "$level" == "WARN" ]; then
-            echo "$timestamp [$level] $script_name: $message" >&2
-        fi
+        echo "$message" >&2
     fi
 }
 
@@ -96,5 +94,13 @@ modprobe_sys_ko() {
     return 0
 }
 
+check_ubrt_support() {
+    if [ ! -f "/sys/firmware/acpi/tables/UBRT" ]; then
+        log ERROR "The ACPI table UBRT is not found, current system does not support UB."
+        exit 1
+    fi
+}
+
 ensure_log_dir
+check_ubrt_support
 
