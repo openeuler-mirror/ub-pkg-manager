@@ -7,8 +7,8 @@ Before=multi-user.target
 [Service]
 Type=oneshot
 ExecStart=/usr/local/ub-pkg-manager/bin/01-ub-pkg-urma.sh
-StandardOutput=append:/var/log/ub-pkg-manager.log
-StandardError=append:/var/log/ub-pkg-manager.log
+StandardOutput=journal
+StandardError=journal
 RemainAfterExit=yes
 
 [Install]

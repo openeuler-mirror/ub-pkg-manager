@@ -49,6 +49,7 @@ log() {
     
     if [ $message_level_index -ge $current_level_index ] || [ $current_level_index -eq -1 ]; then
         echo "$timestamp [$level] $script_name: $message" >> "$LOG_FILE"
+        echo "$message" >&2
     fi
 }
 
