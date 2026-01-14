@@ -49,9 +49,6 @@ log() {
     
     if [ $message_level_index -ge $current_level_index ] || [ $current_level_index -eq -1 ]; then
         echo "$timestamp [$level] $script_name: $message" >> "$LOG_FILE"
-        if [ "$level" == "ERROR" ] || [ "$level" == "WARN" ]; then
-            echo "$timestamp [$level] $script_name: $message" >&2
-        fi
     fi
 }
 
