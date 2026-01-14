@@ -6,6 +6,10 @@ MEM_MODULES=(
     "obmm"
 )
 
+SENTRY_MODULES=(
+    "sentry_reporter"
+    "sentry_remote_reporter"
+)
 
 function ub_pkg_mem_main(){
     log INFO "Loading Mem KO modules"
@@ -14,13 +18,13 @@ function ub_pkg_mem_main(){
         exit 1
     fi
 
-    if [ -f "/lib/modules/$(uname -r)/kernel/drivers/ub/sentry/sentry_reporter.ko" ] ; then
-        modprobe sentry_reporter
-        modprobe sentry_remote_reporter
-    else
+    if [ ! -f "/lib/modules/$(uname -r)/kernel/drivers/ub/sentry/sentry_reporter.ko" ]; then
         log WARN "Not found sentry_reporter module file, skipping"
         exit 0
-fi
+    elif ! modprobe_sys_ko "${SENTRY_MODULES[@]}"; then
+        log ERROR "Failed to load SENTRY KO modules, aborting"
+        exit 1
+    fi
 }
 
 ub_pkg_mem_main
