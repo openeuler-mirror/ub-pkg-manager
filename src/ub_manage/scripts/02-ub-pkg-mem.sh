@@ -18,12 +18,9 @@ function ub_pkg_mem_main(){
         exit 1
     fi
 
-    if [ ! -f "/lib/modules/$(uname -r)/kernel/drivers/ub/sentry/sentry_reporter.ko" ]; then
-        log WARN "Not found sentry_reporter module file, skipping"
+    if ! modprobe_sys_ko "${SENTRY_MODULES[@]}"; then
+        log WARN "Failed to load SENTRY KO modules, skipping"
         exit 0
-    elif ! modprobe_sys_ko "${SENTRY_MODULES[@]}"; then
-        log ERROR "Failed to load SENTRY KO modules, aborting"
-        exit 1
     fi
 }
 
