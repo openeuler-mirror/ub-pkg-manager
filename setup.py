@@ -3,7 +3,7 @@ from setuptools import find_packages, setup
 
 setup(
     name='ub-pkg-manager',
-    version='0.0.1',
+    version='0.0.2',
     description='UB OS Component',
     packages=find_packages(where='src'),
     package_dir={'': 'src'},
