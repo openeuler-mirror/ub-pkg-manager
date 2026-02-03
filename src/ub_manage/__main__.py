@@ -1,12 +1,15 @@
 import sys
 
+from ub_manage.cli.cmd import CLIApplication
 
-def main():
+
+def ub_cli():
     """
-    Main function for the ub-pkg-cli command
+    Main function for the ub-cli command
     """
-    return 0
+    app = CLIApplication(name="ub-cli")
+    sys.exit(app.run())
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    sys.exit(ub_cli())

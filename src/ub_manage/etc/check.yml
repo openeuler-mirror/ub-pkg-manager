@@ -1,0 +1,10 @@
+external_service:
+  - lcne
+  - mami
+test_kit:
+  - name: urma
+    cmd: /usr/bin/urma
+    args:
+      - --version=1
+      - --verbose
+    result:

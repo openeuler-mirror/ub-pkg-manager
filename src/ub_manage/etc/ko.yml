@@ -1,0 +1,15 @@
+- ko: obmm
+  cmd: 
+  example: ub-pkg-cli update obmm mempool_size=1G mempool_refill_timeout=30000 mempool_allocator=hugetlb_pud mem_allocator_granu=2m skip_cache_maintain=FALSE
+  args:
+    - mempool_size
+    - mempool_refill_timeout
+    - mempool_allocator
+    - mem_allocator_granu
+    - skip_cache_maintain
+- ko: grub
+  cmd:
+  example: ub-pkg-cli update grub numa_remote=nofallback,hugetlb_nowatermark,preonline pmd_mapping=25%
+  args:
+    - numa_remote
+    - pmd_mapping
