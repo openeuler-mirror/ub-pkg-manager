@@ -3,8 +3,6 @@ external_service:
   - mami
 test_kit:
   - name: urma
-    cmd: /usr/bin/urma
+    cmd: urma_admin show
     args:
-      - --version=1
-      - --verbose
     result:
