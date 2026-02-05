@@ -51,7 +51,7 @@ class CheckCommand(BaseCommand):
     ]
     drive = [
         "ubfi",
-        "ummu-core",
+        "ummu_core",
         "ummu",
         "ubus",
         "hisi_ubus",
@@ -70,7 +70,7 @@ class CheckCommand(BaseCommand):
         "obmm",
         "sentry_reporter",
         "sentry_remote_reporter",
-        "vfio-ub",
+        "vfio_ub",
     ]
 
     check_file = "/etc/ub-pkg-manager/check.yml"
@@ -121,7 +121,7 @@ class CheckCommand(BaseCommand):
         check_rpm_result = dict()
         for rpm in self.rpm:
             check_result = run_cmd(["rpm", "-q", rpm])
-            check_rpm_result[rpm] = True if "is not installed" in check_result.stdout else False
+            check_rpm_result[rpm] = False if "is not installed" in check_result.stdout else True
 
         table = Table(show_header=True, header_style="bold magenta", box=box.SIMPLE)
         table.add_column("RPM", style="green", width=30, vertical="middle")
@@ -141,7 +141,7 @@ class CheckCommand(BaseCommand):
         self.console.print("Checking drive load...", end="\n")
         check_drive_result = dict()
         for drive in self.drive:
-            check_result = run_cmd(command=f"lsmod | grep -q '^{drive}\\b '", shell=True)
+            check_result = run_cmd(command=f"lsmod | grep -w {drive}", shell=True)
             if not check_result.success and not check_result.exception:
                 check_drive_result[drive] = False
                 continue
@@ -191,7 +191,7 @@ class CheckCommand(BaseCommand):
                     f.write(f"{drive:<32}{ load_status}\n")
 
                 f.write("\n\nTestkit check report\n\n")
-                f.write(f"{'Testkit Command':<32}Execute Result\n")
+                f.write(f"{'Testkit Command':<64}Execute Result\n")
                 f.write("=" * 60 + "\n")
                 for testkit_cmd, status in check_result.testkit.items():
                     testkit_status = "Success" if status else "Failed"
@@ -251,12 +251,12 @@ class CheckCommand(BaseCommand):
                 output_lines = check_result.stdout.strip().split('\n') if check_result.stdout else []
                 if len(output_lines) == 2:
                     testkit_result[test["cmd"]] = False
-                    self.console.print(f"[red]Test '{test['cmd']}' failed: Output has only 2 lines[/red]")
+                    self.console.print(f"[red]Test '{test['cmd']}': failed[/red]")
                     continue
-                self.console.print(f"[green]Test '{test['cmd']}' passed[green]")
+                self.console.print(f"[green]Test '{test['cmd']}': passed[green]")
             else:
                 testkit_result[test["cmd"]] = False
-                self.console.print(f"[red]Test '{test['cmd']}' failed[/red]")
+                self.console.print(f"[red]Test '{test['cmd']}': failed[/red]")
 
         return testkit_result
 
