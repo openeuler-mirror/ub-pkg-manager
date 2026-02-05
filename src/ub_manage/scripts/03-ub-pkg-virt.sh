@@ -3,7 +3,7 @@
 source /usr/local/ub-pkg-manager/bin/ub-pkg-common.sh
 
 VIRT_MODULES=(
-    "vfio-ub"
+    "vfio_ub"
 )
 
 

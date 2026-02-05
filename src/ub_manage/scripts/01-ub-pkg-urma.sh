@@ -3,7 +3,7 @@ source /usr/local/ub-pkg-manager/bin/ub-pkg-common.sh
 
 URMA_MODULES=(
     "ubfi"
-    "ummu-core"
+    "ummu_core"
     "ummu"
     "ubus"
     "hisi_ubus"
