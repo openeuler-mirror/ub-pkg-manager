@@ -75,6 +75,7 @@ install -m 644 ub-pkg-mem.service %{buildroot}/usr/lib/systemd/system/
 install -m 644 ub-pkg-virt.service %{buildroot}/usr/lib/systemd/system/
 
 # Install etc directory files to system location
+mkdir -p %{buildroot}/etc/ub-pkg-manager/scene.d
 install -m 644 src/ub_manage/etc/check.yml %{buildroot}/etc/ub-pkg-manager/
 
 
@@ -215,6 +216,7 @@ fi
 %{_bindir}/ub-pkg-cli
 /usr/lib/systemd/system/ub-pkg-manager.service
 %dir /etc/ub-pkg-manager
+%dir /etc/ub-pkg-manager/scene.d
 %config(noreplace) /etc/ub-pkg-manager/check.yml
 /usr/local/ub-pkg-manager/bin/00-ub-pkg-manager.sh
 /usr/local/ub-pkg-manager/bin/ub-pkg-common.sh

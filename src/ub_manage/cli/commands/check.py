@@ -1,12 +1,11 @@
 import os
-from typing import List
 
 import yaml
 from pydantic import BaseModel
 from rich import box
 from rich.table import Table
 from ub_manage.cli.commands.base import run_cmd
-from ub_manage.cli.framework.args import OptionParameter, ParamType, PositionalParameter
+from ub_manage.cli.framework.args import OptionParameter, ParamType
 from ub_manage.cli.framework.base import BaseCommand, CommandMetadata
 from ub_manage.log import logger
 
@@ -92,6 +91,7 @@ class CheckCommand(BaseCommand):
                 param_type=ParamType.LIST,
                 choices=["conf", "func"],
                 aliases=["conf", "func"],
+                default=["conf", "func"],
             )
         )
         self.add_parameter(
