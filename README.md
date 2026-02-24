@@ -105,6 +105,56 @@ ub-pkg-cli update <module> --yes
 ub-pkg-cli check --action conf func
 ```
 
+#### load 命令
+
+```shell
+ub-pkg-cli load ub --file /home/scenes.yml
+```
+
+> **其中指定的 --file 参数的配置文件格式如下**：
+>
+> ```yaml
+> scene: ub
+> modules:
+>   - ko: obmm
+>     cmd: modprobe obmm
+>     args:
+>       - name: mempool_size
+>         value: 1G
+>       - name: mempool_refill_timeout
+>         value: 30000
+> ```
+
+#### dump 命令
+
+```shell
+# 导出文件`/etc/modprobe.d/ub-pkg-manager.conf`设置的所有配置项
+ub-pkg-cli dump --file /home/ub-options.yml
+```
+
+#### rollback 命令
+
+```shell
+# 回滚特定内核模块的最近一次配置（只支持单次回滚）
+ub-pkg-cli rollback obmm
+```
+
+#### list 命令
+
+```shell
+# 列出支持的所有场景
+ub-pkg-cli list --all
+
+# 列出ub场景下的所有ko配置
+ub-pkg-cli list --scene ub
+
+# 列出ub场景下的obmm的配置项
+ub-pkg-cli list --scene ub --module obmm
+
+# 列出ub场景下的obmm的配置项,包含场景名称的详细信息时
+ub-pkg-cli list --scene ub --module obmm -i
+```
+
 ## 安装与配置步骤
 
 ### 安装步骤
@@ -230,16 +280,19 @@ ub-pkg-cli update --help
 1. **Fork 本项目**
 
 2. **创建特性分支**
+
    ```bash
    git checkout -b feature/amazing-feature
    ```
 
 3. **提交更改**
+
    ```bash
    git commit -m 'Add some amazing feature'
    ```
 
 4. **推送到分支**
+
    ```bash
    git push origin feature/amazing-feature
    ```

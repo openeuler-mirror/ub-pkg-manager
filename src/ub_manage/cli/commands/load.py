@@ -15,7 +15,6 @@ class LoadCommand(BaseCommand, Conf):
     """
 
     name = "load"
-    parent = UBCommandGroup()
 
     def __init__(self):
         """
