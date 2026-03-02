@@ -103,7 +103,32 @@ ub-pkg-cli update <module> --yes
 ```bash
 # 执行系统检查
 ub-pkg-cli check --action conf func
+
+# 以客户端的方式执行测试套件
+ub-pkg-cli check --action conf func --client
+ub-pkg-cli check -c
 ```
+可通过修改**`/etc/ub-pkg-manager/check.yml`**配置文件来增加测试套和待检测的第三方服务，配置项内容如下：
+
+> ```yaml
+> external_service:
+>   - lcne
+>   - mami
+> test_kit:
+>   - name: urma_perftest
+>     client: true
+>     enable: true
+>     cmd: urma_perftest send_lat -d udma2 -s 2 -n 10 -p 0 --tp_aware --eid_idx 7 -l 128 -S 192.168.100.100
+>     result: bytes\s+iterations\s+t_min\[us\]\s+t_max\[us\]
+> ```
+>
+> **check 命令测试套执行逻辑**
+>
+> check 命令用于检查第三方服务及运行测试套件。测试套（test_kit）分为**服务端测试套**与**客户端测试套**，执行逻辑如下：
+>
+> - **默认行为**：执行 `check`命令时，默认仅运行**服务端测试套**。
+> - **执行客户端测试套**：若需执行客户端测试套，请在命令后添加 **`-c`** 参数。
+> - **执行依赖与间隔**：当启用 `-c`参数时，需确保**首先执行服务端测试套**，并在其完成后**立即启动客户端测试套**，两者执行间隔**不超过 30 秒**，以确保测试环境的一致性与时效性。
 
 #### load 命令
 

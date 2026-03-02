@@ -2,7 +2,12 @@ external_service:
   - lcne
   - mami
 test_kit:
-  - name: urma
-    cmd: urma_admin show
-    args:
+  - name: urma_perftest
+    client: true
+    enable: true
+    cmd: urma_perftest send_lat -d udma2 -s 2 -n 10 -p 0 --tp_aware --eid_idx 7 -l 128 -S 192.168.100.100
+    result: bytes\s+iterations\s+t_min\[us\]\s+t_max\[us\]
+  - name: mem-pool-test
+    enable: true
+    cmd: bash /usr/local/ub-pkg-manager/bin/testkit/mem_pool/test.sh
     result:

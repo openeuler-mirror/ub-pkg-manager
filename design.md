@@ -129,6 +129,10 @@ ub-pkg-cli [command] [subcommand] [options]
   ```shell
   # 执行系统检查
   ub-pkg-cli check --action conf func
+
+  # 以客户端的方式执行测试套件
+  ub-pkg-cli check --action conf func --client
+  ub-pkg-cli check -c
   ```
 
 - **load**：加载特定场景内核模块配置
@@ -192,10 +196,11 @@ external_service:
   - lcne
   - mami
 test_kit:
-  - name: urma
-    cmd: urma_admin show
-    args:
-    result:
+  - name: urma_perftest
+    client: true
+    enable: true
+    cmd: urma_perftest send_lat -d udma2 -s 2 -n 10 -p 0 --tp_aware --eid_idx 7 -l 128 -S 192.168.100.100
+    result: bytes\s+iterations\s+t_min\[us\]\s+t_max\[ux\]
 ```
 
 - **内核模块配置**：`/etc/modprobe.d/ub-pkg-manager.conf`

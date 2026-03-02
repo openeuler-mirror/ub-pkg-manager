@@ -1,4 +1,5 @@
 import os
+import re
 
 import yaml
 from pydantic import BaseModel
@@ -96,6 +97,15 @@ class CheckCommand(BaseCommand):
         )
         self.add_parameter(
             OptionParameter(name="file", short="f", help_text="Print check report to file", param_type=ParamType.STRING)
+        )
+        self.add_parameter(
+            OptionParameter(
+                name="client",
+                default=False,
+                param_type=ParamType.FLAG,
+                short="c",
+                help_text="Run checks in client mode",
+            )
         )
         self._check_config = self._load_check()
 
@@ -230,30 +240,55 @@ class CheckCommand(BaseCommand):
         self.console.print(table, end="\n")
         return check_service_result
 
+    def _private_test_kit(self) -> dict:
+        testkit_result = dict()
+        check_result = run_cmd(command=["urma_admin", "show"])
+        if check_result.success:
+            testkit_result["urma_admin"] = True
+            output_lines = check_result.stdout.split('\n') if check_result.stdout else []
+            if len(output_lines) == 2:
+                testkit_result["urma_admin"] = False
+                self.console.print(f"[red]Test 'urma_admin': failed[/red]")
+            else:
+                self.console.print(f"[green]Test 'urma_admin': passed[/green]")
+        else:
+            testkit_result["urma_admin"] = False
+            self.console.print(f"[red]Test 'urma_admin': failed[/red]")
+        return testkit_result
+
     def _execute_testkit(self):
         """
         Runs the testkit command with the provided arguments and displays
         the results in a formatted table.
         """
         self.console.print("Executing testkit...", end="\n")
-        testkit_result = dict()
+        testkit_result = self._private_test_kit()
+        if not testkit_result["urma_admin"]:
+            return testkit_result
+
         if not self._check_config or not self._check_config["test_kit"]:
             self.console.print("No test kit found in config file", end="\n")
             return testkit_result
 
         for test in self._check_config["test_kit"]:
-            command = test["cmd"].split()
-            if "args" in test and test["args"] and isinstance(test["args"], list):
-                command.extend(test["args"])
-            check_result = run_cmd(command=command)
+            if not test.get("cmd"):
+                continue
+            if not test.get("enable", True):
+                continue
+            if self.client != test.get("client", False):
+                continue
+            check_result = run_cmd(command=test["cmd"].split())
             if check_result.success:
                 testkit_result[test["cmd"]] = True
-                output_lines = check_result.stdout.strip().split('\n') if check_result.stdout else []
-                if len(output_lines) == 2:
-                    testkit_result[test["cmd"]] = False
-                    self.console.print(f"[red]Test '{test['cmd']}': failed[/red]")
-                    continue
-                self.console.print(f"[green]Test '{test['cmd']}': passed[green]")
+                pattern = test.get("result", None)
+                if pattern:
+                    if re.search(pattern, check_result.stdout):
+                        self.console.print(f"[green]Test '{test['cmd']}': passed[/green]")
+                    else:
+                        testkit_result[test["cmd"]] = False
+                        self.console.print(f"[red]Test '{test['cmd']}': failed[/red]")
+                else:
+                    self.console.print(f"[green]Test '{test['cmd']}': passed[/green]")
             else:
                 testkit_result[test["cmd"]] = False
                 self.console.print(f"[red]Test '{test['cmd']}': failed[/red]")
