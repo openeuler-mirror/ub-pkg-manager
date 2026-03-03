@@ -1,5 +1,5 @@
 Name:           ub-pkg-manager
-Version:        0.0.3
+Version:        0.0.4
 Release:        1
 Summary:        The full function of UB OS Component
 
@@ -75,6 +75,7 @@ install -m 644 ub-pkg-mem.service %{buildroot}/usr/lib/systemd/system/
 install -m 644 ub-pkg-virt.service %{buildroot}/usr/lib/systemd/system/
 
 # Install etc directory files to system location
+mkdir -p %{buildroot}/etc/ub-pkg-manager/scene.d
 install -m 644 src/ub_manage/etc/check.yml %{buildroot}/etc/ub-pkg-manager/
 
 
@@ -87,6 +88,11 @@ install -m 755 src/ub_manage/scripts/00-ub-pkg-manager.sh %{buildroot}/usr/local
 install -m 755 src/ub_manage/scripts/01-ub-pkg-urma.sh %{buildroot}/usr/local/ub-pkg-manager/bin/01-ub-pkg-urma.sh
 install -m 755 src/ub_manage/scripts/02-ub-pkg-mem.sh %{buildroot}/usr/local/ub-pkg-manager/bin/02-ub-pkg-mem.sh
 install -m 755 src/ub_manage/scripts/03-ub-pkg-virt.sh %{buildroot}/usr/local/ub-pkg-manager/bin/03-ub-pkg-virt.sh
+
+# Install testkit directory
+mkdir -p %{buildroot}/usr/local/ub-pkg-manager/bin/testkit
+cp -r src/ub_manage/scripts/testkit/* %{buildroot}/usr/local/ub-pkg-manager/bin/testkit/
+chmod -R 755 %{buildroot}/usr/local/ub-pkg-manager/bin/testkit/
 
 %post -n ub-pkg-manager
 
@@ -215,9 +221,12 @@ fi
 %{_bindir}/ub-pkg-cli
 /usr/lib/systemd/system/ub-pkg-manager.service
 %dir /etc/ub-pkg-manager
+%dir /etc/ub-pkg-manager/scene.d
 %config(noreplace) /etc/ub-pkg-manager/check.yml
 /usr/local/ub-pkg-manager/bin/00-ub-pkg-manager.sh
 /usr/local/ub-pkg-manager/bin/ub-pkg-common.sh
+%dir /usr/local/ub-pkg-manager/bin/testkit
+/usr/local/ub-pkg-manager/bin/testkit/*
 
 # Files for ub-pkg-urma
 %files -n ub-pkg-urma
@@ -238,6 +247,10 @@ fi
 /usr/local/ub-pkg-manager/bin/03-ub-pkg-virt.sh
 
 %changelog
+* Thur Feb 5 2026 gongzhengtang <gong_zhengtang@163.com> - 0.0.4-1
+- fix correct execution of lsmod and rpm -q commands
+* Tues Feb 3 2026 gongzhengtang <gong_zhengtang@163.com> - 0.0.3-1
+- Added CLI tool, service validity check, and updated KO module configuration.
 * Wed Jan 14 2026 gongzhengtang <gong_zhengtang@163.com> - 0.0.2-1
 - Added UBRT ACPI table existence check, dual log printing for error fixes, and systemctl status error message viewing support
 * Tue Dec 16 2025 gongzhengtang <gong_zhengtang@163.com> - 0.0.1-1

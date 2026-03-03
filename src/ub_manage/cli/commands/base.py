@@ -44,9 +44,6 @@ class UBCommandGroup(CommandGroup):
                 param_type=ParamType.LIST,
             )
         )
-        self.add_shared_parameter(
-            OptionParameter(name="file", help_text="ko config file or save config file", short="f")
-        )
 
 
 class Arg(BaseModel):

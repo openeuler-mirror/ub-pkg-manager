@@ -32,10 +32,6 @@ class UpdateCommand(BaseCommand, Conf):
         self.add_parameter(
             OptionParameter(name="list", short="l", help_text="List available ko args", param_type=ParamType.FLAG)
         )
-        self.add_parameter(
-            OptionParameter(name="save", short="s", help_text="Save ko configuration file", param_type=ParamType.STRING)
-        )
-
         self.add_parameter(OptionParameter(name="yes", short="y", param_type=ParamType.FLAG))
 
     def _conf_grub(self):

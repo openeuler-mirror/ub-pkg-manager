@@ -13,16 +13,16 @@ class UbCliHelpFormatter(argparse.RawDescriptionHelpFormatter):
         sections = super().format_help().split('\n\n')
         help_sections = [sections[0], "", ""]
         for section in sections[1:]:
-            if section.startswith('General ub-cli options:'):
+            if section.startswith('General ub-pkg-cli options:'):
                 help_sections[2] = section + "\n\n"
-            elif section.startswith('ub-cli tool of Main Commands:'):
+            elif section.startswith('ub-pkg-cli tool of Main Commands:'):
                 help_sections[1] = section
 
         return '\n\n'.join(help_sections)
 
     def start_section(self, heading):
         if heading == 'options':
-            heading = 'General ub-cli options'
+            heading = 'General ub-pkg-cli options'
         super().start_section(heading)
 
 
@@ -80,7 +80,7 @@ class BaseParser:
 
         root_parser = self._create_parser()
 
-        subparsers = root_parser.add_subparsers(metavar="", title="ub-cli tool of Main Commands", dest='_command')
+        subparsers = root_parser.add_subparsers(metavar="", title="ub-pkg-cli tool of Main Commands", dest='_command')
 
         for cmd in registry.list_commands():
             self._add_command_parser(cmd, subparsers)
