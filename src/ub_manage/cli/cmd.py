@@ -58,47 +58,15 @@ class CLIApplication:
         self.epilog = epilog
         self.registry = CommandRegistry()
         self.parser = SmartParser(prog=name, description=description, epilog=epilog)
+        self.parser.root_parser.add_argument("-V", '--version', action='version', version=f'%(prog)s {self.version}')
         self.executor = BaseExecutor()
         self.help_system = RichHelpSystem()
 
-        self._register_builtin_commands()
         for _cmd in BaseCommand.__subclasses__():
             if _cmd.__name__ == "CommandGroup":
                 continue
             self.register_command(_cmd(), _cmd.parent)
         self._initialized = True
-
-    def _register_builtin_commands(self):
-        """
-        Register built-in commands.
-
-        Registers the 'help' and 'version' commands that are available
-        in every CLI application.
-        """
-
-        @command(name="help", description="Show help information")
-        def help_command(command: str = None):
-            """Show help information for commands."""
-            if command:
-                cmd = self.registry.get_command(command)
-                if cmd:
-                    self.help_system.show_help(cmd)
-                else:
-                    print(f"Command not found: {command}")
-                    return 0
-            else:
-                self.help_system.show_all_commands(self.registry)
-            return 1
-
-        @command(name="version", description="Show version information")
-        def version_command():
-            """Show application version information."""
-            print(f"{self.name} version {self.version}")
-            return 0
-
-        # Commands are currently registered by the subclass scanning mechanism
-        self.register_command(help_command)
-        self.register_command(version_command)
 
     def register_command(self, command: BaseCommand, parent: str = None) -> None:
         """
@@ -126,7 +94,9 @@ class CLIApplication:
         """
         if args is None:
             args = sys.argv[1:]
-
+        if '--version' in args or '-V' in args:
+            print(f"{self.name} {self.version}")
+            return 0
         try:
             command, params = self.parser.parse(args, self.registry)
             validation_result = self.parser.validate(command, params)

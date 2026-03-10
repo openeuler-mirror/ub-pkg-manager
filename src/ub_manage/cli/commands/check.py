@@ -248,12 +248,12 @@ class CheckCommand(BaseCommand):
             output_lines = check_result.stdout.split('\n') if check_result.stdout else []
             if len(output_lines) == 2:
                 testkit_result["urma_admin"] = False
-                self.console.print(f"[red]Test 'urma_admin': failed[/red]")
+                self.console.print(f"[red]Verification for 'urma_admin' failed.[/red]")
             else:
-                self.console.print(f"[green]Test 'urma_admin': passed[/green]")
+                self.console.print(f"[green]Test case 'urma_admin show' executed successfully.[/green]")
         else:
             testkit_result["urma_admin"] = False
-            self.console.print(f"[red]Test 'urma_admin': failed[/red]")
+            self.console.print(f"[red]Execution of 'urma_admin show' command failed.[/red]")
         return testkit_result
 
     def _execute_testkit(self):
@@ -264,6 +264,7 @@ class CheckCommand(BaseCommand):
         self.console.print("Executing testkit...", end="\n")
         testkit_result = self._private_test_kit()
         if not testkit_result["urma_admin"]:
+            self.console.print("urma_admin check failed, Skipping other test kits.")
             return testkit_result
 
         if not self._check_config or not self._check_config["test_kit"]:
@@ -277,21 +278,23 @@ class CheckCommand(BaseCommand):
                 continue
             if self.client != test.get("client", False):
                 continue
+            name = test.get("name", test["cmd"])
             check_result = run_cmd(command=test["cmd"].split())
+
             if check_result.success:
                 testkit_result[test["cmd"]] = True
                 pattern = test.get("result", None)
                 if pattern:
                     if re.search(pattern, check_result.stdout):
-                        self.console.print(f"[green]Test '{test['cmd']}': passed[/green]")
+                        self.console.print(f"[green]Test '{name}': passed[/green]")
                     else:
                         testkit_result[test["cmd"]] = False
-                        self.console.print(f"[red]Test '{test['cmd']}': failed[/red]")
+                        self.console.print(f"[red]Test '{name}': failed[/red]")
                 else:
-                    self.console.print(f"[green]Test '{test['cmd']}': passed[/green]")
+                    self.console.print(f"[green]Test '{name}': passed[/green]")
             else:
                 testkit_result[test["cmd"]] = False
-                self.console.print(f"[red]Test '{test['cmd']}': failed[/red]")
+                self.console.print(f"[red]Test '{name}': failed[/red]")
 
         return testkit_result
 

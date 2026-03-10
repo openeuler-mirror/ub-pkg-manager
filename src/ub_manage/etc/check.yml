@@ -1,6 +1,4 @@
 external_service:
-  - lcne
-  - mami
 test_kit:
   - name: urma_perftest
     client: true

@@ -85,14 +85,11 @@ ub-pkg-cli --version
 #### update 命令
 
 ```bash
-# 更新指定内核模块
-ub-pkg-cli update <module>
-
 # 列出可用的内核模块参数
 ub-pkg-cli update <module> --list
 
-# 保存内核模块配置
-ub-pkg-cli update <module> --save <file>
+#设置参数并自动加载
+ub-pkg-cli update obmm --args mempool_size=1G mempool_refill_timeout=30000 -y
 
 # 自动确认操作
 ub-pkg-cli update <module> --yes
@@ -129,26 +126,8 @@ ub-pkg-cli check -c
 > - **默认行为**：执行 `check`命令时，默认仅运行**服务端测试套**。
 > - **执行客户端测试套**：若需执行客户端测试套，请在命令后添加 **`-c`** 参数。
 > - **执行依赖与间隔**：当启用 `-c`参数时，需确保**首先执行服务端测试套**，并在其完成后**立即启动客户端测试套**，两者执行间隔**不超过 30 秒**，以确保测试环境的一致性与时效性。
-
-#### load 命令
-
-```shell
-ub-pkg-cli load ub --file /home/scenes.yml
-```
-
-> **其中指定的 --file 参数的配置文件格式如下**：
 >
-> ```yaml
-> scene: ub
-> modules:
->   - ko: obmm
->     cmd: modprobe obmm
->     args:
->       - name: mempool_size
->         value: 1G
->       - name: mempool_refill_timeout
->         value: 30000
-> ```
+> 通过配置 `external_service`项，实现对多项第三方服务（数据库、中间件等）的健康状态检查。默认配置为空数组，用户可按需添加需要监控的服务端点。
 
 #### dump 命令
 
@@ -162,22 +141,6 @@ ub-pkg-cli dump --file /home/ub-options.yml
 ```shell
 # 回滚特定内核模块的最近一次配置（只支持单次回滚）
 ub-pkg-cli rollback obmm
-```
-
-#### list 命令
-
-```shell
-# 列出支持的所有场景
-ub-pkg-cli list --all
-
-# 列出ub场景下的所有ko配置
-ub-pkg-cli list --scene ub
-
-# 列出ub场景下的obmm的配置项
-ub-pkg-cli list --scene ub --module obmm
-
-# 列出ub场景下的obmm的配置项,包含场景名称的详细信息时
-ub-pkg-cli list --scene ub --module obmm -i
 ```
 
 ## 安装与配置步骤
@@ -279,8 +242,8 @@ ub-pkg-cli --version
 # 查看可用参数
 ub-pkg-cli update obmm --list
 
-# 更新网络模块配置
-ub-pkg-cli update obmm --args mempool_size=1G mempool_refill_timeout=30000 mempool_allocator=hugetlb_pud mem_allocator_granu=2m skip_cache_maintain=FALSE
+# 更新模块配置
+ub-pkg-cli update obmm --args mempool_size=1G mempool_refill_timeout=30000 -y
 ```
 
 ### 示例 2：系统检查

@@ -1,6 +1,6 @@
 Name:           ub-pkg-manager
 Version:        0.0.4
-Release:        1
+Release:        2
 Summary:        The full function of UB OS Component
 
 License:        mulan
@@ -75,7 +75,6 @@ install -m 644 ub-pkg-mem.service %{buildroot}/usr/lib/systemd/system/
 install -m 644 ub-pkg-virt.service %{buildroot}/usr/lib/systemd/system/
 
 # Install etc directory files to system location
-mkdir -p %{buildroot}/etc/ub-pkg-manager/scene.d
 install -m 644 src/ub_manage/etc/check.yml %{buildroot}/etc/ub-pkg-manager/
 
 
@@ -221,7 +220,6 @@ fi
 %{_bindir}/ub-pkg-cli
 /usr/lib/systemd/system/ub-pkg-manager.service
 %dir /etc/ub-pkg-manager
-%dir /etc/ub-pkg-manager/scene.d
 %config(noreplace) /etc/ub-pkg-manager/check.yml
 /usr/local/ub-pkg-manager/bin/00-ub-pkg-manager.sh
 /usr/local/ub-pkg-manager/bin/ub-pkg-common.sh
@@ -247,6 +245,8 @@ fi
 /usr/local/ub-pkg-manager/bin/03-ub-pkg-virt.sh
 
 %changelog
+* Tues Mar 3 2026 gongzhengtang <gong_zhengtang@163.com> - 0.0.4-2
+- Add load, dump,rollback and list commands
 * Thur Feb 5 2026 gongzhengtang <gong_zhengtang@163.com> - 0.0.4-1
 - fix correct execution of lsmod and rpm -q commands
 * Tues Feb 3 2026 gongzhengtang <gong_zhengtang@163.com> - 0.0.3-1

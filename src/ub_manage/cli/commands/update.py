@@ -25,12 +25,10 @@ class UpdateCommand(BaseCommand, Conf):
         specifying the driver kernel module, listing available arguments, and saving
         configuration files.
         """
-        super().__init__(CommandMetadata(name=self.name, description="update ko configurations"))
+        super().__init__(CommandMetadata(name=self.name, description="update module configurations"))
+        self.add_parameter(PositionalParameter(name="module", help_text="update module", param_type=ParamType.STRING))
         self.add_parameter(
-            PositionalParameter(name="module", help_text="update ko module", param_type=ParamType.STRING)
-        )
-        self.add_parameter(
-            OptionParameter(name="list", short="l", help_text="List available ko args", param_type=ParamType.FLAG)
+            OptionParameter(name="list", short="l", help_text="List available module args", param_type=ParamType.FLAG)
         )
         self.add_parameter(OptionParameter(name="yes", short="y", param_type=ParamType.FLAG))
 
@@ -112,7 +110,7 @@ class UpdateCommand(BaseCommand, Conf):
             return False
 
         if not old_ko_options_config:
-            logger.warning(f"ko module {ko_model.ko} not found in {Conf.ko_config}")
+            logger.warning(f"module {ko_model.ko} not found in {Conf.ko_config}")
             return True
 
         old_ko_options_config = old_ko_options_config.replace(f"options {ko_model.ko}", "")
@@ -128,6 +126,30 @@ class UpdateCommand(BaseCommand, Conf):
             }
         }
         return self._save_bak_ko_config(ko_bak_config)
+
+    def _valid_args(self, ko_models):
+        invalid_args = []
+        seen_params = set()
+        valid_args = [arg.replace("-", "") for arg in ko_models[self.module].args]
+        for arg in self.args:
+            parts = arg.split("=")
+            if len(parts) != 2:
+                invalid_args.append(arg)
+                continue
+            param_name, param_value = parts
+            param_value = param_value.strip()
+            if not param_value or " " in param_value:
+                invalid_args.append(param_name)
+                continue
+            if param_name not in valid_args:
+                invalid_args.append(param_name)
+                continue
+            if param_name in seen_params:
+                invalid_args.append(param_name)
+                continue
+            seen_params.add(param_name)
+
+        return invalid_args
 
     def run(self, *args, **kwargs):
         """Execute the update command for driver kernel modules.
@@ -145,29 +167,27 @@ class UpdateCommand(BaseCommand, Conf):
         """
         ko_models = self.get_ko_models()
         if self.module not in ko_models:
-            self.console.print(f"ko module {self.module} not found")
+            self.console.print(f"module {self.module} not found")
             return
 
         if self.list:
-            self.console.print("Available ko args:\n")
+            self.console.print("Available module args:\n")
             for arg in ko_models[self.module].args:
                 self.console.print(f"{arg}")
             self.console.print(f"\nexample:\n {ko_models[self.module].example}")
             return
 
         if not self.args:
-            self.console.print("No ko module specified parameters")
+            self.console.print("No module specified parameters")
             return
-        valid_args = [arg.replace("-", "") for arg in ko_models[self.module].args]
-        invalid_args = set([arg.split("=")[0] for arg in self.args if len(arg.split("=")) == 2]).difference(
-            set(valid_args)
-        )
+
+        invalid_args = self._valid_args(ko_models)
         if invalid_args:
             self.console.print(f"Invalid args: {' '.join(invalid_args) }")
             return
 
         if not self._save(ko_models[self.module]):
-            self.console.print(f"Failed to update ko module {self.module}")
+            self.console.print(f"Failed to update module {self.module}")
 
-        self.console.print(f"ko module {self.module} updated successfully")
+        self.console.print(f"module {self.module} updated successfully")
         reload_ko(self.module, self.yes)
