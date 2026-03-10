@@ -57,6 +57,7 @@ class BaseParser:
         self.epilog = epilog
         self.add_help = add_help
         self.allow_abbrev = allow_abbrev
+        self.root_parser = self._create_parser()
 
     def parse(self, args: List[str], registry: CommandRegistry) -> Tuple[BaseCommand, Dict[str, Any]]:
         """
@@ -78,17 +79,17 @@ class BaseParser:
         if not args:
             raise ValueError("No arguments provided")
 
-        root_parser = self._create_parser()
-
-        subparsers = root_parser.add_subparsers(metavar="", title="ub-pkg-cli tool of Main Commands", dest='_command')
+        subparsers = self.root_parser.add_subparsers(
+            metavar="", title="ub-pkg-cli tool of Main Commands", dest='_command'
+        )
 
         for cmd in registry.list_commands():
             self._add_command_parser(cmd, subparsers)
 
-        parsed_args = root_parser.parse_args(args)
+        parsed_args = self.root_parser.parse_args(args)
 
         if not parsed_args._command:
-            root_parser.print_help()
+            self.root_parser.print_help()
             sys.exit(0)
 
         command = registry.get_command(parsed_args._command)

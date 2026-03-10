@@ -91,7 +91,10 @@ class RollbackCommand(BaseCommand, Conf):
         if self.module == "grub":
             self.console.print("grub is a system module, can't rollback")
             return
-
+        ko_models = self.get_ko_models()
+        if self.module not in ko_models:
+            self.console.print(f"ko module {self.module} not found")
+            return
         print(f"Are you sure want to rollback ko module '{self.module}'? [y/N]: ", end="")
         choice = input().strip().lower()
 
