@@ -25,12 +25,18 @@ class UpdateCommand(BaseCommand, Conf):
         specifying the driver kernel module, listing available arguments, and saving
         configuration files.
         """
-        super().__init__(CommandMetadata(name=self.name, description="update module configurations"))
-        self.add_parameter(PositionalParameter(name="module", help_text="update module", param_type=ParamType.STRING))
+        super().__init__(CommandMetadata(name=self.name, description="Update module configurations"))
         self.add_parameter(
-            OptionParameter(name="list", short="l", help_text="List available module args", param_type=ParamType.FLAG)
+            PositionalParameter(name="module", help_text="Name of the module to update", param_type=ParamType.STRING)
         )
-        self.add_parameter(OptionParameter(name="yes", short="y", param_type=ParamType.FLAG))
+        self.add_parameter(
+            OptionParameter(
+                name="list", short="l", help_text="List available module parameters", param_type=ParamType.FLAG
+            )
+        )
+        self.add_parameter(
+            OptionParameter(name="yes", short="y", help_text="Skip confirmation prompt", param_type=ParamType.FLAG)
+        )
 
     def _conf_grub(self):
         """Update grub configuration with backup support.
@@ -167,7 +173,7 @@ class UpdateCommand(BaseCommand, Conf):
         """
         ko_models = self.get_ko_models()
         if self.module not in ko_models:
-            self.console.print(f"module {self.module} not found")
+            self.console.print(f"module {self.module} is not supported for update.")
             return
 
         if self.list:
@@ -178,16 +184,20 @@ class UpdateCommand(BaseCommand, Conf):
             return
 
         if not self.args:
-            self.console.print("No module specified parameters")
+            self.console.print(
+                f"No parameters specified for module {self.module}. Use --list option to see available parameters."
+            )
             return
 
         invalid_args = self._valid_args(ko_models)
         if invalid_args:
-            self.console.print(f"Invalid args: {' '.join(invalid_args) }")
+            self.console.print(
+                f"Invalid args: {' '.join(invalid_args) }. Use --list option to see available parameters."
+            )
             return
 
         if not self._save(ko_models[self.module]):
-            self.console.print(f"Failed to update module {self.module}")
+            self.console.print(f"Failed to update module {self.module} configuration.")
 
-        self.console.print(f"module {self.module} updated successfully")
+        self.console.print(f"Module {self.module} configuration updated successfully.")
         reload_ko(self.module, self.yes)

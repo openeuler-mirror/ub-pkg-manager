@@ -39,7 +39,7 @@ class UBCommandGroup(CommandGroup):
         self.add_shared_parameter(
             OptionParameter(
                 name="args",
-                help_text="Arguments to pass to the command of the loaded ko",
+                help_text="Additional arguments to pass to the command",
                 short="p",
                 param_type=ParamType.LIST,
             )
