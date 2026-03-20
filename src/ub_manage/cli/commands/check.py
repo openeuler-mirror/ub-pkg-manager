@@ -177,7 +177,9 @@ class CheckCommand(BaseCommand):
         """
 
         try:
-            os.makedirs(os.path.dirname(self.file), exist_ok=True)
+            file_dir = os.path.dirname(self.file)
+            if file_dir:
+                os.makedirs(file_dir, exist_ok=True)
             with open(self.file, "w") as f:
                 f.write("\n\nRPM check report\n\n")
                 f.write(f"{'RPM':<32}Install Status\n")

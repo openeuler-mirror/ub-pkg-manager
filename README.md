@@ -41,7 +41,7 @@ src/ub_manage/
 │   ├── cmd.py           # 命令行应用主类
 ├── etc/                 # 配置文件目录
 │   ├── check.yml        # 检查配置文件
-│   ├── ko.yml           # 内核模块配置文件
+│   ├── ko.yml           # 模块配置文件
 ├── scripts/             # 脚本文件目录
 │   ├── 00-ub-pkg-manager.sh  # ub-pkg-manager 组件脚本
 │   ├── 01-ub-pkg-urma.sh     # ub-pkg-urma 组件脚本
@@ -85,7 +85,7 @@ ub-pkg-cli --version
 #### update 命令
 
 ```bash
-# 列出可用的内核模块参数
+# 列出可用的模块参数
 ub-pkg-cli update <module> --list
 
 #设置参数并自动加载
@@ -94,6 +94,8 @@ ub-pkg-cli update obmm --args mempool_size=1G mempool_refill_timeout=30000 -y
 # 自动确认操作
 ub-pkg-cli update <module> --yes
 ```
+
+> **注意**：使用update命令更新`grub`模块参数时，不会覆盖已存在的设置。如需移除其他参数，必须手动修改`/etc/default/grub`文件，因为该命令暂不支持覆盖修改`grub`模块。
 
 #### check 命令
 
@@ -108,14 +110,19 @@ ub-pkg-cli check -c
 可通过修改**`/etc/ub-pkg-manager/check.yml`**配置文件来增加测试套和待检测的第三方服务，配置项内容如下：
 
 > ```yaml
+> # 需要检查的第三方服务，多个服务以列表的方式配置
 > external_service:
 >   - lcne
 >   - mami
 > test_kit:
 >   - name: urma_perftest
+>   	# 表示客户端测试套或服务端测试套，默认不设置则为false
 >     client: true
+>     # 是否启用测试套，设置为false则不执行该测试套
 >     enable: true
+>     # 执行测试套的命令
 >     cmd: urma_perftest send_lat -d udma2 -s 2 -n 10 -p 0 --tp_aware --eid_idx 7 -l 128 -S 192.168.100.100
+>     # 测试套执行结果比对的正则表达式，用于判断测试套执行是否正确
 >     result: bytes\s+iterations\s+t_min\[us\]\s+t_max\[us\]
 > ```
 >
@@ -123,7 +130,7 @@ ub-pkg-cli check -c
 >
 > check 命令用于检查第三方服务及运行测试套件。测试套（test_kit）分为**服务端测试套**与**客户端测试套**，执行逻辑如下：
 >
-> - **默认行为**：执行 `check`命令时，默认仅运行**服务端测试套**。
+> - **默认行为**：执行 `check`命令时，默认仅运行**服务端测试套**（配置中未设置`client`或`client: false`的为服务端测试套）。
 > - **执行客户端测试套**：若需执行客户端测试套，请在命令后添加 **`-c`** 参数。
 > - **执行依赖与间隔**：当启用 `-c`参数时，需确保**首先执行服务端测试套**，并在其完成后**立即启动客户端测试套**，两者执行间隔**不超过 30 秒**，以确保测试环境的一致性与时效性。
 >
@@ -136,12 +143,16 @@ ub-pkg-cli check -c
 ub-pkg-cli dump --file /home/ub-options.yml
 ```
 
+> **注意：**当前支持导出除 `grub` 模块外的其他模块参数，`grub` 模块的导出功能暂未提供。
+
 #### rollback 命令
 
 ```shell
-# 回滚特定内核模块的最近一次配置（只支持单次回滚）
+# 回滚特定模块的最近一次配置（只支持单次回滚）
 ub-pkg-cli rollback obmm
 ```
+
+> **注意**：对 `grub` 模块的配置一旦应用，将无法通过rollback命令回退到之前的设置。
 
 ## 安装与配置步骤
 
@@ -232,11 +243,11 @@ ub-pkg-cli --version
 ### 配置文件位置
 
 - 主要配置文件：`/etc/ub-pkg-manager/`
-- 内核模块配置：`/etc/modprobe.d/ub-pkg-manager.conf`
+- 模块配置：`/etc/modprobe.d/ub-pkg-manager.conf`
 
 ## 使用示例
 
-### 示例 1：更新内核模块配置
+### 示例 1：更新模块配置
 
 ```bash
 # 查看可用参数

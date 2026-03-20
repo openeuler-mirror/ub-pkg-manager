@@ -23,9 +23,11 @@ class RollbackCommand(BaseCommand, Conf):
         Sets up the command with a positional parameter for specifying the
         driver kernel module to rollback.
         """
-        super().__init__(CommandMetadata(name=self.name, description="update ko configurations"))
+        super().__init__(
+            CommandMetadata(name=self.name, description="Rollback module configurations to previous state")
+        )
         self.add_parameter(
-            PositionalParameter(name="module", help_text="update ko module", param_type=ParamType.STRING)
+            PositionalParameter(name="module", help_text="Name of the module to rollback", param_type=ParamType.STRING)
         )
 
     def _rollback(self):
@@ -40,12 +42,12 @@ class RollbackCommand(BaseCommand, Conf):
 
         """
         if not os.path.exists(Conf.ko_bak_file):
-            logger.error(f"ko module {self.module} not found in {Conf.ko_bak_file}")
+            logger.error(f"Module {self.module} is not configured for rollback in {Conf.ko_bak_file}")
             return False
 
         bak_ko_config = self._load_bak_ko_config()
         if self.module not in bak_ko_config:
-            logger.error(f"ko module {self.module} not found in {Conf.ko_bak_file}")
+            logger.error(f"Module {self.module} is not configured for rollback in {Conf.ko_bak_file}")
             self.console.print(f"Failed to load ko configuration, please run 'ub-pkg-cli update {self.module}' first")
             return False
 
@@ -55,13 +57,13 @@ class RollbackCommand(BaseCommand, Conf):
         content = self._load_modprobe_ko_conf()
         if not content:
             self.console.print(
-                f"ko configuration file {Conf.ko_config} not found, please run 'ub-pkg-cli update {self.module}' first"
+                f"Module configuration file {Conf.ko_config} not found, please run 'ub-pkg-cli update {self.module}' first"
             )
             return False
 
         ko_options_pattern = re.compile(rf'^options {self.module}.*$', re.MULTILINE)
         if not ko_options_pattern.search(content):
-            self.console.print(f"ko module {self.module} not found in {Conf.ko_config}")
+            self.console.print(f"Module {self.module} is not configured for rollback in {Conf.ko_config}")
             return False
 
         content = ko_options_pattern.sub(modprobe_options, content)
@@ -85,15 +87,15 @@ class RollbackCommand(BaseCommand, Conf):
             None: The method prints success or error messages to the console.
         """
         if not self.module:
-            self.console.print("ko module is required")
+            self.console.print("No module specified. Please specify a module name for rollback operation.")
             return
 
         if self.module == "grub":
-            self.console.print("grub is a system module, can't rollback")
+            self.console.print("GRUB is a system module, can't rollback.")
             return
         ko_models = self.get_ko_models()
         if self.module not in ko_models:
-            self.console.print(f"ko module {self.module} not found")
+            self.console.print(f"Module {self.module} is not supported for rollback.")
             return
         print(f"Are you sure want to rollback ko module '{self.module}'? [y/N]: ", end="")
         choice = input().strip().lower()

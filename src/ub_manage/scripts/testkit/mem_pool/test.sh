@@ -1,8 +1,8 @@
 #!/bin/bash
 
 yum install -y gcc
-gcc /usr/local/ub-pkg-manager/bin/testkit/mem_pool/test_export.c -o test_export -lobmm
-gcc /usr/local/ub-pkg-manager/bin/testkit/mem_pool/test_unexport.c -o test_unexport -lobmm
+gcc /usr/local/ub-pkg-manager/bin/testkit/mem_pool/test_export.c -o /usr/local/ub-pkg-manager/bin/testkit/mem_pool/test_export -lobmm
+gcc /usr/local/ub-pkg-manager/bin/testkit/mem_pool/test_unexport.c -o /usr/local/ub-pkg-manager/bin/testkit/mem_pool/test_unexport -lobmm
 
 export_mem=${1:-"128"}
 

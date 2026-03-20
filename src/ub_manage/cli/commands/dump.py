@@ -26,9 +26,15 @@ class DumpCommand(BaseCommand, Conf):
 
         Sets up command metadata and adds command-line parameters for file output.
         """
-        super().__init__(CommandMetadata(name=self.name, description="Dump configuration"))
+        super().__init__(CommandMetadata(name=self.name, description="Dump module configuration"))
         self.add_parameter(
-            OptionParameter(name="file", short="f", help_text="Dump to file", param_type=ParamType.STRING, default=None)
+            OptionParameter(
+                name="file",
+                short="f",
+                help_text="Path to file where configuration will be saved",
+                param_type=ParamType.STRING,
+                default=None,
+            )
         )
 
     def run(self, *args, **kwargs):
@@ -40,12 +46,12 @@ class DumpCommand(BaseCommand, Conf):
         """
         content = self._load_modprobe_ko_conf()
         if not content:
-            self.console.print("Modprobe ko configuration not found")
+            self.console.print("Modprobe module configuration not found. Please ensure the configuration file exists.")
             return
         ko_options_pattern = re.compile(rf'^options .*$', re.MULTILINE)
         ko_options_matched = ko_options_pattern.findall(content)
         if not ko_options_matched:
-            self.console.print("Modprobe ko options not found")
+            self.console.print("Modprobe module options not found.")
             return
 
         ko_options = [option.split(' ', 1)[-1] for option in ko_options_matched]
@@ -64,7 +70,9 @@ class DumpCommand(BaseCommand, Conf):
         occur during file operations.
         """
         try:
-            os.makedirs(os.path.dirname(self.file), exist_ok=True)
+            file_dir = os.path.dirname(self.file)
+            if file_dir:
+                os.makedirs(file_dir, exist_ok=True)
 
             with open(self.file, "w") as f:
                 yaml.dump(ko_options, f, default_flow_style=False)
