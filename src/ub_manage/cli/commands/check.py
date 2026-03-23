@@ -203,11 +203,11 @@ class CheckCommand(BaseCommand):
                     f.write(f"{drive:<32}{ load_status}\n")
 
                 f.write("\n\nTestkit check report\n\n")
-                f.write(f"{'Testkit Command':<64}Execute Result\n")
+                f.write(f"{'Testkit Command':<80}Execute Result\n")
                 f.write("=" * 60 + "\n")
                 for testkit_cmd, status in check_result.testkit.items():
                     testkit_status = "Success" if status else "Failed"
-                    f.write(f"{testkit_cmd:<32}{ testkit_status}\n")
+                    f.write(f"{testkit_cmd:<80}{ testkit_status}\n")
 
         except Exception as e:
             logger.error(f"Create file failed: {e}")

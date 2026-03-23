@@ -265,7 +265,8 @@ def reload_ko(module, yes=False):
     """
 
     if module == "grub":
-        print("Execute 'grub2-mkconfig -o /boot/grub2/grub.cfg' to apply changes.")
+        print("For EFI boot: execute 'grub2-mkconfig -o /boot/efi/EFI/openEuler/grub.cfg' to apply changes.")
+        print("For BIOS boot: execute 'grub2-mkconfig -o /boot/grub2/grub.cfg' to apply changes.")
         print(
             "The GRUB configuration changes will not take effect un5til the system is restarted. Please restart your system manually to apply the changes."
         )
