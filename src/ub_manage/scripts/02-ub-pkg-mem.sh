@@ -4,6 +4,7 @@ source /usr/local/ub-pkg-manager/bin/ub-pkg-common.sh
 
 MEM_MODULES=(
     "obmm"
+    "ubdevshm"
 )
 
 SENTRY_MODULES=(

@@ -216,7 +216,6 @@ options obmm mempool_size=1G mempool_refill_timeout=30000 mempool_allocator=huge
 | 依赖项 | 版本要求 | 用途 |
 |--------|----------|------|
 | pyyaml | >=6.0 | 处理 YAML 配置文件 |
-| pydantic | - | 数据验证和设置管理 |
 | rich | - | 命令行界面美化 |
 
 ### 5.2 系统依赖
