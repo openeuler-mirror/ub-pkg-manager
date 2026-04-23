@@ -21,7 +21,7 @@ setup(
     package_data={
         'ub_manage': get_etc_files(),
     },
-    install_requires=['pyyaml>=6.0', "pydantic", "rich"],
+    install_requires=['pyyaml>=6.0', "rich"],
     entry_points={
         'console_scripts': [
             'ub-pkg-cli = ub_manage.__main__:ub_cli',

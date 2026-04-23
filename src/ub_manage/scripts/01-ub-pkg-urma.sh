@@ -19,6 +19,7 @@ URMA_MODULES=(
     "uburma"
     "udma"
     "ubagg"
+    "ipourma"
 )
 
 

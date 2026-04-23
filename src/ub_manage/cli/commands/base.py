@@ -1,11 +1,11 @@
 import os
 import shlex
 import subprocess
+from dataclasses import dataclass
 from typing import Any, List
 
 import ub_manage
 import yaml
-from pydantic import BaseModel
 from ub_manage.cli.framework.args import OptionParameter, ParamType
 from ub_manage.cli.framework.base import CommandGroup
 from ub_manage.log import logger
@@ -46,23 +46,27 @@ class UBCommandGroup(CommandGroup):
         )
 
 
-class Arg(BaseModel):
+@dataclass
+class Arg:
     name: str
     value: Any
 
 
-class Module(BaseModel):
+@dataclass
+class Module:
     ko: str
     cmd: Any = None
     example: Any = None
-    args: List[Arg]
+    args: List[Arg] = None
 
 
-class Scene(BaseModel):
+@dataclass
+class Scene:
     scene: str
-    modules: List[Module]
+    modules: List[Module] = None
 
 
+@dataclass
 class KO(Module):
     args: List[str]
 
@@ -205,7 +209,8 @@ class Conf:
         return True
 
 
-class CommandResult(BaseModel):
+@dataclass
+class CommandResult:
     success: bool = False
     code: int = -1
     stdout: str = ''

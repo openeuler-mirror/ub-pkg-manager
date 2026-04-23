@@ -1,6 +1,6 @@
 Name:           ub-pkg-manager
 Version:        0.0.4
-Release:        2
+Release:        6
 Summary:        The full function of UB OS Component
 
 License:        mulan
@@ -8,7 +8,7 @@ Source0:        %{name}-%{version}.tar.gz
 
 ExclusiveArch:  aarch64
 BuildRequires:  python3-setuptools
-Requires:       python3 >= 3.6 python3-rich python3-pydantic python3-pyyaml
+Requires:       python3 >= 3.7 python3-rich python3-pyyaml
 Requires:       systemd
 Requires:       ub-pkg-urma = %{version}-%{release}
 Requires:       ub-pkg-mem = %{version}-%{release}
