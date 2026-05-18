@@ -3,6 +3,13 @@
 source /usr/local/ub-pkg-manager/bin/ub-pkg-common.sh
 
 MEM_MODULES=(
+    "ubfi"
+    "ummu_core"
+    "ummu"
+    "ubus"
+    "hisi_ubus"
+    "cdma"
+    "ubase"
     "obmm"
     "ubdevshm"
 )
