@@ -101,6 +101,15 @@ check_ubrt_support() {
     fi
 }
 
+check_container(){
+    if grep -qE "docker|lxc|podman|kubepods" /proc/1/cgroup 2>/dev/null; then
+        log ERROR "The current system is running in a container, no need to load UB KO modules."
+        exit 1
+    fi
+}
+
+
 ensure_log_dir
+check_container
 check_ubrt_support
 
