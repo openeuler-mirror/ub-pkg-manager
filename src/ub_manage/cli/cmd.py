@@ -34,7 +34,7 @@ class CLIApplication:
     def __init__(
         self,
         name: str = "ub-pkg-cli",
-        version: str = "0.0.4",
+        version: str = "1.0.0",
         description: str = None,
         epilog: str = None,
     ):

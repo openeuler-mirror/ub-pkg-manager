@@ -2,6 +2,20 @@
 
 LOG_FILE="/var/log/ub-pkg-manager.log"
 LOG_LEVEL="INFO"
+DEVICE_MGMT_MODULES=(
+    "ubfi"
+    "ubus"
+    "ummu-core"
+    "ummu"
+    "ummu-pmu"
+    "hisi_ubus"
+    "odf"
+    "cis"
+    "ub_fwctl"
+    "ubase"
+    "cdma"
+    "ubdevshm"
+)
 
 ensure_log_dir() {
     local log_dir="$1"
@@ -80,6 +94,11 @@ modprobe_sys_ko() {
     ko=($@)
     
     for mod in "${ko[@]}"; do
+        if ! modprobe --show "$mod" >/dev/null 2>&1; then
+            log WARN "Module $mod not found, skipping"
+            continue
+        fi
+
         if ! module_is_loaded "$mod"; then
             if ! run_modprobe "$mod"; then
                 log ERROR "Failed to load module $mod, aborting"

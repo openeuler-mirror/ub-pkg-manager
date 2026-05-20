@@ -14,7 +14,7 @@ def get_etc_files():
 
 setup(
     name='ub-pkg-manager',
-    version='0.0.4',
+    version='1.0.0',
     description='UB OS Component',
     packages=find_packages(where='src'),
     package_dir={'': 'src'},
